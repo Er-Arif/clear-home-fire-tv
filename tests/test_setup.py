@@ -197,6 +197,37 @@ class SetupTests(unittest.TestCase):
             with self.assertRaises(setup.SetupError):
                 setup.Adb("adb", device)
 
+    def test_authorization_wait_continues_after_tv_approval(self):
+        adb = setup.Adb("adb", "192.168.1.50:5555", authorization_timeout=120)
+        with patch.object(adb, "run", side_effect=["connected", setup.SetupError("unauthorized"), "device"]) as runner:
+            with patch.object(setup.time, "sleep") as sleeper:
+                adb.connect()
+                sleeper.assert_called_once_with(2)
+                self.assertEqual(runner.call_count, 3)
+
+    def test_authorization_wait_has_deadline_and_cli_default_fails_fast(self):
+        for timeout in (0, 120):
+            adb = setup.Adb("adb", "192.168.1.50:5555", authorization_timeout=timeout)
+            with patch.object(adb, "run", side_effect=["connected", setup.SetupError("unauthorized")]):
+                with patch.object(setup.time, "monotonic", side_effect=[0, 121]):
+                    with self.assertRaises(setup.SetupError):
+                        adb.connect()
+
+    def test_first_connection_authentication_error_waits_instead_of_stopping(self):
+        adb = setup.Adb("adb", "192.168.1.50:5555", authorization_timeout=120)
+        failures = [setup.SetupError("failed to authenticate"), setup.SetupError("unauthorized"), "device"]
+        with patch.object(adb, "run", side_effect=failures):
+            with patch.object(setup.time, "sleep") as sleeper:
+                adb.connect()
+                sleeper.assert_called_once_with(2)
+
+    def test_connection_refused_does_not_wait_for_an_approval_that_cannot_arrive(self):
+        adb = setup.Adb("adb", "192.168.1.50:5555", authorization_timeout=120)
+        with patch.object(adb, "run", side_effect=setup.SetupError("connection refused")) as runner:
+            with self.assertRaises(setup.SetupError):
+                adb.connect()
+            self.assertEqual(runner.call_count, 1)
+
     def test_local_checksum_mismatch_rejected(self):
         self.asset_patch.stop()
         path = self.root / "local.apk"

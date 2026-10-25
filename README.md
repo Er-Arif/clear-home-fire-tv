@@ -12,7 +12,8 @@ A clean, native Fire TV home screen with your favourite apps, a visible Sleep bu
 - Favourite selection: hold **OK** on an app to add or remove it.
 - **All Apps**, direct Fire TV settings shortcuts, a clock, and one-click **Sleep**.
 - Home-button and boot redirection through the separate [Home on Fire](https://github.com/toolicious/home-on-fire) project.
-- A setup command that checks the device, verifies APK checksums, preserves other accessibility services and saves a local recovery backup.
+- A standalone Windows setup app that prepares Python and ADB automatically, discovers TV addresses and waits for TV approval.
+- A cross-platform setup command with device checks, verified APKs, preserved accessibility services and local recovery backups.
 - Optional shorter system animations, with restoration of their original values.
 
 This changes the home screen. It does not remove advertisements inside Netflix, YouTube, Prime Video or other streaming apps. Amazon Home stays installed and may briefly appear during redirection. There is no claim of a measured CPU, internet-speed or playback-performance improvement.
@@ -31,34 +32,33 @@ This is an early public release tested on one physical device, not a promise of 
 
 ## Quick start
 
-### 1. Prepare the TV and computer
+### Windows: download one application
 
-1. Put the computer and Fire TV on the same trusted network.
-2. On the TV, enable **Developer Options → ADB Debugging**. In **My Fire TV → About**, select the device name seven times if Developer Options is hidden.
-3. Find the TV's address under **My Fire TV → About → Network**.
-4. Install [Python 3.11 or newer](https://www.python.org/downloads/) and Google's [Android Platform Tools](https://developer.android.com/tools/releases/platform-tools). Add the extracted `platform-tools` folder to PATH, or pass `--adb` with the full executable path. Administrator/root access on the computer is not required.
+1. Download **[ClearHome-Windows-Setup.exe](https://github.com/Er-Arif/clear-home-fire-tv/releases/latest/download/ClearHome-Windows-Setup.exe)** and open it. No ZIP extraction, separate Python installation or PATH setup is needed.
+2. On the TV, enable **Developer Options → ADB Debugging**. In **My Fire TV → About**, select the device name seven times if Developer Options is hidden. Keep the PC and TV on the same Wi-Fi.
+3. Select **Install Clear Home**. It finds a single advertised ADB device automatically. Use **Find my TV** to choose from several devices, or enter the address from **My Fire TV → About → Network** if discovery is unavailable.
+4. Accept **Allow USB debugging?** on the TV. Setup waits for up to two minutes and continues automatically when approval arrives.
+5. On the TV, choose **Clear Home** in Home on Fire, then press Home.
 
-### 2. Download and run
+The Windows application reuses compatible Python and ADB installations when found. Otherwise it downloads pinned tools from **python.org** and **dl.google.com**, verifies SHA-256 checksums, and prepares private copies under `%LOCALAPPDATA%\ClearHome\Tools`. It does not install Python globally, change PATH, require pip or request administrator privileges. Internet access is needed for missing tools and Home on Fire. Automatic Windows setup supports **Windows 10/11 x64**; other hosts can use the CLI below.
 
-Download **ClearHome-Setup-v0.2.0.zip** from the [latest release](https://github.com/Er-Arif/clear-home-fire-tv/releases/latest) and extract it.
+The release includes the signed Android APK from v0.2.0; v0.3.0 upgrades the host installer. The Windows executable is currently unsigned. Checksums are in the release; systems whose policy prohibits unsigned apps should use an approved deployment method rather than disabling security controls.
 
-**Windows:** double-click `Setup.cmd`. It asks for the TV address. Or run:
+### macOS / Linux and command-line use
 
-```powershell
-py -3 setup.py install --device 192.168.1.50:5555
-```
+Install [Python 3.11+](https://www.python.org/downloads/) and Google's [Android Platform Tools](https://developer.android.com/tools/releases/platform-tools), and make `adb` available on PATH (or pass `--adb`). Download **ClearHome-Setup-v0.3.0.zip** from the [latest release](https://github.com/Er-Arif/clear-home-fire-tv/releases/latest) and extract it.
 
-**macOS / Linux:**
+The ZIP also includes the Windows executable; `Setup.cmd` opens that application on Windows.
 
 ```bash
 python3 setup.py install --device 192.168.1.50:5555
 ```
 
-Replace the example address with your own TV's address. Approve **Allow USB debugging?** on the TV. If the first command stops while waiting for approval, approve it and rerun; it has not changed the TV at that point.
+Replace the example address with your TV's address. On Windows use `py -3` instead of `python3`. Add `--wait-for-authorization` to wait for TV approval; otherwise approve the prompt and rerun if the first command stops.
 
 The installer uses a bundled ClearHome.apk when available, otherwise downloads the pinned release. Home on Fire is downloaded from its developer's official release only if it is not already installed. Both APKs are checked against the SHA-256 values in `release-manifest.json`.
 
-### 3. Finish once on the TV
+### Finish once on the TV
 
 The installer opens **Home on Fire**:
 
@@ -106,7 +106,9 @@ Sleep is stick standby. Whether the television panel itself switches off depends
 
 ## Undo
 
-Keep the extracted setup folder, especially its hidden `.clear-home` directory. It contains the **first** settings backup for each device. Re-running setup keeps that original baseline.
+**Windows application:** reopen `ClearHome-Windows-Setup.exe`, select the same TV, then choose **Undo setup**. Its backups live at `%LOCALAPPDATA%\ClearHome\State` and are retained across installer upgrades. Keep that folder. This button restores setup changes without uninstalling apps.
+
+**CLI:** keep the extracted setup folder, especially its hidden `.clear-home` directory. It contains the **first** settings backup for each device. Re-running setup keeps that original baseline. A new installation after a completed restore archives the previous record and takes a fresh baseline.
 
 ```bash
 python3 setup.py restore --device 192.168.1.50:5555

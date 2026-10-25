@@ -82,13 +82,14 @@ def atomic_json(path, data):
 
 
 class Adb:
-    def __init__(self, executable, device):
+    def __init__(self, executable, device, authorization_timeout=0):
         if not re.fullmatch(r"[A-Za-z0-9.-]+:[0-9]{1,5}", device or ""):
             raise SetupError("Use the Fire TV address in IP:port form, for example 192.168.1.50:5555.")
         if not 1 <= int(device.rsplit(":", 1)[1]) <= 65535:
             raise SetupError("Invalid ADB port.")
         self.executable = executable
         self.device = device
+        self.authorization_timeout = authorization_timeout
 
     def run(self, *arguments, timeout=30, device=True):
         command = [self.executable] + (["-s", self.device] if device else []) + list(arguments)
@@ -105,12 +106,29 @@ class Adb:
         return output
 
     def connect(self):
-        self.run("connect", self.device, device=False)
         try:
-            self.run("get-state")
+            self.run("connect", self.device, device=False)
         except SetupError as error:
-            raise SetupError("Approve 'Allow USB debugging?' on the TV, then rerun this command. "
-                             "Check ADB debugging and the network address if no prompt appears.") from error
+            message = str(error).lower()
+            if "authenticate" not in message and "unauthorized" not in message:
+                raise
+            # A first connection can exit nonzero while the approval dialog is open.
+            # Keep waiting on that transport instead of forcing the user to restart.
+        deadline = time.monotonic() + self.authorization_timeout
+        announced = False
+        while True:
+            try:
+                if self.run("get-state", timeout=8).strip() != "device":
+                    raise SetupError("The ADB transport is not ready.")
+                return
+            except SetupError as error:
+                if not self.authorization_timeout or time.monotonic() >= deadline:
+                    raise SetupError("Approve 'Allow USB debugging?' on the TV, then retry. "
+                                     "Check ADB debugging and the network address if no prompt appears.") from error
+                if not announced:
+                    print("Waiting for the TV: accept 'Allow USB debugging?' on its screen. Setup will continue automatically.", flush=True)
+                    announced = True
+                time.sleep(2)
 
     def shell(self, *tokens):
         # ADB shell joins arguments remotely: quote each token for Android's shell.
@@ -331,6 +349,7 @@ def main(argv=None):
     parser.add_argument("action", choices=("install", "restore", "status"))
     parser.add_argument("--device", help="TV IP:port; asked interactively when omitted")
     parser.add_argument("--adb", help="Path to Google's adb executable")
+    parser.add_argument("--wait-for-authorization", action="store_true", help="Wait up to two minutes for TV approval")
     parser.add_argument("--state-dir", type=Path, default=ROOT / ".clear-home", help="Local recovery backup directory")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--faster-animations", action="store_true", help="Opt in to 0.5 animation scales")
@@ -339,7 +358,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         device = args.device or input("Fire TV address (for example 192.168.1.50:5555): ").strip()
-        adb = Adb(find_adb(args.adb), device)
+        adb = Adb(find_adb(args.adb), device, 120 if args.wait_for_authorization else 0)
         adb.connect()
         profile = adb.profile()
         print(profile["model"] + " - " + profile["os"] + " / API " + profile["sdk"])

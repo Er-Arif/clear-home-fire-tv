@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import sys
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -12,6 +13,8 @@ apk = ROOT / "artifacts/ClearHome.apk"
 apk_hash = hashlib.sha256(apk.read_bytes()).hexdigest()
 if apk_hash != manifest["clear_home"]["sha256"]:
     raise SystemExit("APK does not match the pinned release manifest.")
+subprocess.run([sys.executable, str(ROOT / "tools/build_windows.py")], check=True)
+windows_setup = ROOT / "artifacts/ClearHome-Windows-Setup.exe"
 tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT).decode().split("\0")
 archive_path = ROOT / "artifacts" / ("ClearHome-Setup-v" + manifest["version"] + ".zip")
 with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
@@ -23,8 +26,10 @@ with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as arc
             raise SystemExit("Refusing to package a private or unexpected tracked path: " + name)
         archive.write(path, name)
     archive.write(apk, "artifacts/ClearHome.apk")
+    archive.write(windows_setup, "artifacts/ClearHome-Windows-Setup.exe")
 archive_hash = hashlib.sha256(archive_path.read_bytes()).hexdigest()
 (ROOT / "artifacts/SHA256SUMS.txt").write_text(
-    apk_hash + "  ClearHome.apk\n" + archive_hash + "  " + archive_path.name + "\n", encoding="utf-8")
+    apk_hash + "  ClearHome.apk\n" + archive_hash + "  " + archive_path.name + "\n"
+    + hashlib.sha256(windows_setup.read_bytes()).hexdigest() + "  ClearHome-Windows-Setup.exe\n", encoding="utf-8")
 print(archive_path)
 print("Verified tracked source and signed APK; local backups/signing keys excluded.")

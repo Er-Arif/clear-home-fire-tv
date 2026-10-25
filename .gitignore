@@ -6,6 +6,7 @@ artifacts/*
 !artifacts/.gitkeep
 *.apk
 *.idsig
+*.exe
 *.jks
 *.keystore
 *.p12

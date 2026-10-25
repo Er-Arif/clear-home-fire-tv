@@ -40,3 +40,19 @@ jobs:
           name: ClearHome-debug-ci-only
           path: artifacts/ClearHome-debug.apk
           retention-days: 7
+  windows-setup:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.11'
+      - run: python tools/build_windows.py --test-payload --output build/ClearHome-Setup-CI.exe
+      - shell: python
+        run: |
+          import pathlib, subprocess
+          exe = pathlib.Path('build/ClearHome-Setup-CI.exe').resolve()
+          report = pathlib.Path('build/windows-self-tests.txt').resolve()
+          result = subprocess.run([str(exe), '--self-test', str(report)], timeout=40)
+          print(report.read_text())
+          assert result.returncode == 0

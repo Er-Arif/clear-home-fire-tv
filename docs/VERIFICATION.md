@@ -1,10 +1,13 @@
-# Verification for v0.2.0
+# Verification for host setup v0.3.0 / Android app v0.2.0
 
 Date: 25 October 2026. Physical device: Amazon AFTKM (`karat`), Fire OS 8.1.8.5 (RS8185/3891), Android API 30.
 
 ## Automated checks
 
-- 15 Python installer tests: compatibility refusal, argument/shell safety, checksum refusal, dry-run behavior, ownership tracking, first-backup preservation, partial-install recovery, wrong-device refusal, preservation of existing apps/permissions/services, canonical component names, disabled original services, and a fresh baseline after completed restoration.
+- 19 Python installer tests: the existing compatibility/recovery/ownership checks plus automatic continuation after TV authorization, first-connection authentication failure, refusal handling and a bounded approval timeout.
+- 17 native Windows bootstrap checks cover discovery deduplication, safe native arguments, matching/rejected checksums, matching/modified caches, archive traversal refusal, embedded payload presence, child execution, bounded timeouts and cancellation.
+- An isolated Windows test forced both prerequisites to be missing. The executable downloaded and verified portable Python 3.13.17 and ADB 37.0.1, prepared private copies in the test folder, ran the embedded CLI without system Python, and ran ADB's version command. A second run reused those tools without overwriting adb.exe. The computer's installed Python and PATH were unchanged.
+- A read-only native GUI preview was opened and its setup controls/instructions were inspected. No TV installation or discovery was triggered through that preview. Real TV setup/restore through the new graphical shell remains unverified; it invokes the same previously device-tested Python installer.
 - Seven pure Java favourite-order checks: valid package names, deduplication, stable order, add/remove, unchanged input, deliberate empty selection and a 30-item limit.
 - Java compilation, Android DEX conversion, ZIP alignment and APK signature verification succeeded locally using JDK 17 / Android SDK 36 tools.
 - The installer's download path fetched the pinned upstream Home on Fire v1.5.2 APK and verified its recorded SHA-256 successfully.
@@ -25,6 +28,8 @@ Tests use ADB-injected remote-style/touch input and observed device state. The p
 Fresh-install and failure/restore scenarios were exercised with the simulated ADB transport, including unrelated services added after installation. The real restore was not run against the owner's existing customized TV because it would undo that setup. The real installer was tested as an upgrade/rerun, not as a factory-fresh-device installation.
 
 Windows was the local build/install host. CI runs Python and Java tests on Windows and Linux and compiles a disposable Android debug APK on Linux. macOS host execution and Fire OS 7 remain unverified by this project.
+
+The host update does not modify or reinstall the owner's TV during bootstrap testing. The shipped Android APK and its signature are unchanged from v0.2.0.
 
 There is no controlled before/after speed benchmark. Clear Home has no network permission, recommendations or downloaded wallpaper; optional 0.5 animation scales shorten transitions without changing CPU speed or streaming performance.
 

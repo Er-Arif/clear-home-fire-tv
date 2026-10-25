@@ -27,8 +27,8 @@ python3 tools/build.py --sdk /path/to/sdk --keystore /private/maintainer.p12 --a
 1. Run Python/Java tests and build with the maintainer's persistent key.
 2. Test the app and installer on a supported device. Check main grid, favourite persistence, All Apps, app launch, settings, Sleep, wake and boot redirection. Test restore on a test device or with the simulated transport; do not erase an existing user's setup to test rollback.
 3. Update `release-manifest.json` to the versioned release URL and the APK SHA-256.
-4. Package `Setup.cmd`, `setup.py`, `release-manifest.json`, `LICENSE`, `README.md`, `docs/`, and `artifacts/ClearHome.apk` in a setup ZIP. Exclude `.clear-home`, signing keys, build directories and third-party APKs.
-5. Publish the signed APK, setup ZIP and `SHA256SUMS.txt` as GitHub Release assets. Only publish what was verified; include compatibility limits in release notes.
+4. On Windows run `python tools/package.py`. It builds the standalone Windows executable with the embedded CLI/APK, then includes that executable, tracked source/docs and APK in a setup ZIP. It excludes recovery state, private keys and build/runtime caches. Python/ADB tool binaries are downloaded later by the Windows app, not redistributed in the release.
+5. Publish the signed APK, Windows executable, setup ZIP and `SHA256SUMS.txt` as GitHub Release assets. Only publish what was verified; include compatibility limits in release notes. See [Windows setup](WINDOWS_SETUP.md) for bootstrap compilation and tests.
 
 ## Extending the app
 

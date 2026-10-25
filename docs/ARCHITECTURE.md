@@ -13,6 +13,8 @@ The app manifest requests no application permissions. The accessibility service 
 
 ## Host setup
 
+The standalone Windows application is built from `windows/*.cs`: `MainForm` handles the asynchronous UI, `ToolsManager` discovers/prepares verified prerequisites, `ProcessRunner` handles quoted child arguments/output/timeouts/cancellation, and `Payload` validates extraction paths and embeds the CLI/APK. Runtime tools stay per-user; recovery state is kept outside versioned payload folders. See [Windows setup](WINDOWS_SETUP.md).
+
 `setup.py` is a standard-library Python CLI. It uses argument-list subprocess execution, remote-shell quoting and bounded ADB timeouts. Installation proceeds as:
 
 ```text

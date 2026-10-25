@@ -1,5 +1,9 @@
 # Recovery and troubleshooting
 
+With the Windows application, reopen it and select **Undo setup** for the same TV. Its stable recovery folder is `%LOCALAPPDATA%\ClearHome\State`. The `.clear-home` directory described below is the CLI default, not the Windows GUI location.
+
+If you used the CLI before switching to the Windows application, keep that earlier `.clear-home` backup. The GUI does not search your disk for old CLI backups; its first snapshot records the TV's state when the GUI is first used. Use the original CLI folder to undo earlier CLI changes.
+
 ## Setup stopped or was interrupted
 
 Rerun the same command after fixing the reported connection/download issue. The first backup is kept. If you want to undo the recorded changes instead:

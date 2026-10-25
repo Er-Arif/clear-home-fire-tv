@@ -1,17 +1,11 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-where py >nul 2>nul
-if not errorlevel 1 (
-  py -3 setup.py install %*
-  goto done
+if exist "%~dp0artifacts\ClearHome-Windows-Setup.exe" (
+  start "" "%~dp0artifacts\ClearHome-Windows-Setup.exe"
+  exit /b
 )
-where python >nul 2>nul
-if not errorlevel 1 (
-  python setup.py install %*
-  goto done
-)
-echo Python 3.11 or newer is required. Install it from https://www.python.org/downloads/
-:done
-echo.
+echo Download ClearHome-Windows-Setup.exe from:
+echo https://github.com/Er-Arif/clear-home-fire-tv/releases/latest
+echo The standalone application prepares Python and ADB automatically.
 pause
