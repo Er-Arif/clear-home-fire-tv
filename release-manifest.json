@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "clear_home": {
+    "url": "https://github.com/Er-Arif/clear-home-fire-tv/releases/download/v0.2.0/ClearHome.apk",
+    "sha256": "34493f84041e2520f78354c21f382e7857f81c77d1f8907ccf273007cd61d45f"
+  },
+  "home_on_fire": {
+    "version": "1.5.2",
+    "url": "https://github.com/toolicious/home-on-fire/releases/download/v1.5.2/home-on-fire.apk",
+    "sha256": "87403c961264cc2e36e53cf571777ec20705eb87f46794cb0ac667135a98d9fe"
+  }
+}

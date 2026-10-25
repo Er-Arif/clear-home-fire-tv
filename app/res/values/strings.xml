@@ -1,0 +1,3 @@
+<resources>
+    <string name="service_description">Lets the Sleep tile put this Fire TV in standby. Does not read screen contents, intercept keys, or access the network.</string>
+</resources>
