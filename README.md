@@ -1,6 +1,6 @@
-# Clear Home for Fire TV
+# PureHome TV
 
-A clean, native Fire TV home screen with your favourite apps, a visible Sleep button, and no advertising or recommendation feeds in the launcher.
+PureHome TV provides Clear Home, a clean, native Fire TV home screen with your favourite apps, a visible Sleep button, and no advertising or recommendation feeds in the launcher.
 
 ![Clear Home running on Fire TV](docs/images/home-screen.png)
 
@@ -34,7 +34,7 @@ This is an early public release tested on one physical device, not a promise of 
 
 ### Windows: download one application
 
-1. Download **[ClearHome-Windows-Setup.exe](https://github.com/Er-Arif/clear-home-fire-tv/releases/latest/download/ClearHome-Windows-Setup.exe)** and open it. No ZIP extraction, separate Python installation or PATH setup is needed.
+1. Download **[ClearHome-Windows-Setup.exe](https://github.com/Er-Arif/purehome-tv/releases/latest/download/ClearHome-Windows-Setup.exe)** and open it. No ZIP extraction, separate Python installation or PATH setup is needed.
 2. On the TV, enable **Developer Options → ADB Debugging**. In **My Fire TV → About**, select the device name seven times if Developer Options is hidden. Keep the PC and TV on the same Wi-Fi.
 3. Select **Install Clear Home**. It finds a single advertised ADB device automatically. Use **Find my TV** to choose from several devices, or enter the address from **My Fire TV → About → Network** if discovery is unavailable.
 4. Accept **Allow USB debugging?** on the TV. Setup waits for up to two minutes and continues automatically when approval arrives.
@@ -46,7 +46,7 @@ The release includes the signed Android APK from v0.2.0; v0.3.0 upgrades the hos
 
 ### macOS / Linux and command-line use
 
-Install [Python 3.11+](https://www.python.org/downloads/) and Google's [Android Platform Tools](https://developer.android.com/tools/releases/platform-tools), and make `adb` available on PATH (or pass `--adb`). Download **ClearHome-Setup-v0.3.0.zip** from the [latest release](https://github.com/Er-Arif/clear-home-fire-tv/releases/latest) and extract it.
+Install [Python 3.11+](https://www.python.org/downloads/) and Google's [Android Platform Tools](https://developer.android.com/tools/releases/platform-tools), and make `adb` available on PATH (or pass `--adb`). Download **ClearHome-Setup-v0.3.0.zip** from the [latest release](https://github.com/Er-Arif/purehome-tv/releases/latest) and extract it.
 
 The ZIP also includes the Windows executable; `Setup.cmd` opens that application on Windows.
 
@@ -124,7 +124,7 @@ Restoration removes only accessibility components added by this setup, keeps unr
 
 ## Download the APK only
 
-Get **ClearHome.apk** and **SHA256SUMS.txt** from [Releases](https://github.com/Er-Arif/clear-home-fire-tv/releases). Installing the APK alone lets you open Clear Home as an app. Sleep needs its accessibility service, and Home/boot redirection needs Home on Fire. See [manual setup](docs/MANUAL_SETUP.md).
+Get **ClearHome.apk** and **SHA256SUMS.txt** from [Releases](https://github.com/Er-Arif/purehome-tv/releases). Installing the APK alone lets you open Clear Home as an app. Sleep needs its accessibility service, and Home/boot redirection needs Home on Fire. See [manual setup](docs/MANUAL_SETUP.md).
 
 No streaming APKs or subscriptions are included. App icons are read from installed apps; the screenshot contains their owners' trademarks. Clear Home is not affiliated with Amazon, Apple, Google or the streaming services shown.
 

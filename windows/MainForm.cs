@@ -64,7 +64,7 @@ namespace ClearHomeSetup {
                 + "Tools and recovery backups stay in your Windows user folder. Your PATH and global Python are unchanged.",
                 Location = new Point(30, 573), Size = new Size(760, 40), Font = new Font("Segoe UI", 8) };
             Controls.Add(notices);
-            AddLink("Instructions", 30, "https://github.com/Er-Arif/clear-home-fire-tv#quick-start");
+            AddLink("Instructions", 30, "https://github.com/Er-Arif/purehome-tv#quick-start");
             AddLink("Python license", 155, "https://docs.python.org/3/license.html");
             AddLink("Android SDK terms", 293, "https://developer.android.com/studio/terms");
             if (preview) { status.Text = "Preview only - downloads and TV changes are disabled."; install.Enabled = find.Enabled = undo.Enabled = false; }
